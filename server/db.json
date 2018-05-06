@@ -1,0 +1,18 @@
+{
+  "resultList": [
+    {
+      "name": "my-dir",
+      "isDirectory": true,
+      "path": "/the/full/path/of/my-dir",
+      "size": "200 Mib",
+      "sizeInKib": 204800
+    },
+    {
+      "name": "my-file",
+      "isDirectory": true,
+      "path": "/the/full/path/of/my-file",
+      "size": "100 Mib",
+      "sizeInKib": 102400
+    }
+  ]
+}
