@@ -1,58 +1,67 @@
 import React from 'react'
 import { connect } from 'react-redux';
+import _ from 'lodash';
 import FileItemRow  from './FileItemRow';
+import { observer } from 'mobx-react';
 
+const parentOf = (path) => _.dropRight(path.split('/'), 1).join('/');
+
+@observer
 class Explorer extends React.Component {
 
   constructor(props) {
     super(props)
     this.onClick = this.onClick.bind(this);
     this.onMarkForDeletion = this.onMarkForDeletion.bind(this);
+    this.goUp = this.goUp.bind(this);
   }
 
   componentDidMount() {
-    this.props.dispatch({
-      type: 'LOAD_DATA',
-      currentTarget: this.props.currentTarget
-    });
+    this.props.store.fetchFileData(this.props.store.currentTarget);
+  }
+
+  goUp(e) {
+    e.preventDefault();
+    window.foo && window.foo();
+    const path = parentOf(this.props.store.currentTarget);
+    this.props.store.fetchFileData(path);
   }
 
   onClick(fileItem) {
     return (e) => {
+      // dispatch action that changes store.currentTarget
       e.preventDefault();
-      this.props.dispatch({ 
-        type: 'LOAD_DATA',
-        currentTarget: fileItem.path
-      })
+      this.props.store.fetchFileData(fileItem.path);
     }
   }
 
   onMarkForDeletion(fileItem) {
     return (e) => {
       e.preventDefault();
-      // this.props.fileMarkedForDeletion(fileItem)
-      this.props.dispatch({
-        type: 'MARKED_FOR_DELETION',
-        target: fileItem.path
-      })
+      this.props.store.markForDeletion(fileItem.path);
     }
   }
 
   render() {
-    const fileData = this.props.fileData || [];
-    // console.log('rendering...', fileData);
+    const store = this.props.store;
+
     return (
       <div>
-        Explorer:
-        <h3> { this.props.currentTarget } </h3>
+        <h2>Explorer</h2>
+        <h3> { store.currentTarget } </h3>
+
+        {store.isOnTop ||
+          <button onClick={ this.goUp }> Up </button>}
+
         <table>
           <tbody>
-            {fileData.map((fileItem, index) =>
+            {store.theFileData.map((fileItem, index) =>
               <FileItemRow
                 name={fileItem.name}
                 size={fileItem.size}
+                markedForDeletion={fileItem.markedForDeletion}
                 onClick={this.onClick(fileItem)}
-                onDelete={this.onMarkForDeletion(fileItem)}
+                onMarkForDeletion={this.onMarkForDeletion(fileItem)}
                 isDirectory={fileItem.isDirectory} 
                 key={index}
               />
@@ -64,17 +73,5 @@ class Explorer extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
-  fileData: state.fileData,
-  currentTarget: state.currentTarget
-});
-
-const mapDispatchToProps = dispatch =>  {
-  return {
-    loadData: (currentTarget) => dispatch({ type: 'LOAD_DATA', currentTarget }),
-    fileItemClicked: (fileItem) => dispatch({ type: 'TOP_CHANGED', currentTarget: fileItem.path }),
-    fileMarkedForDeletion: (fileItem) => dispatch({ type: 'FILE_DELETED', filePath: fileItem.path })
-  }
-}
-
-export default connect(mapStateToProps)(Explorer);
+// Explorer = observer(Explorer);
+export default Explorer;

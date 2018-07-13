@@ -1,52 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, compose } from 'redux';
-import createSagaMiddleware from 'redux-saga';
+import HomeRenderer from './HomeRenderer';
+import WalkingRenderer from './walker/WalkingRenderer';
 
-import './index.css';
-import App from './App';
-import explorerData from './explorerDataReducer';
-import mySaga from './sagas';
-// import registerServiceWorker from './registerServiceWorker';
+const inWalker = window.location.pathname === '/walker';
+const rootEl = document.getElementById('root');
 
-const initialState = {
-  baseTarget: '/Users/abhi/code/proj-fs',
-  currentTarget: '/Users/abhi/code/proj-fs/fake_fs',
-  fileData: [],
-  deletionList: []
+window.madFs = { // the global namespace
+  home: {},
+  walker: {},
+};
+
+if (inWalker) {
+  ReactDOM.render(<WalkingRenderer />, rootEl);
+}else {
+  ReactDOM.render(<HomeRenderer />, rootEl);
 }
-
-const sagaMiddleware = createSagaMiddleware();
-
-const middlewares = [
-  sagaMiddleware,
-  // routerMiddleware(history),
-];
-
-const enhancers = [
-  applyMiddleware(...middlewares),
-];
-
-const composeEnhancers =
-  process.env.NODE_ENV !== 'production' &&
-  typeof window === 'object' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : compose;
-
-const store = createStore(
-  explorerData,
-  initialState,
-  composeEnhancers(...enhancers)
-);
-
-sagaMiddleware.run(mySaga);
-
-ReactDOM.render(
-  <Provider store={store} >
-    <App />
-  </Provider>, 
-  document.getElementById('root')
-);
-
-// registerServiceWorker();

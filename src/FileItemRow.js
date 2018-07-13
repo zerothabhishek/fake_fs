@@ -7,19 +7,22 @@ const FileItemName = ({ name, isDirectory, onClick }) =>
 ;
 
 const DeleteButton = ({ onClick }) =>
-  <span>
-    <a href="/delete" className='delete-button' onClick={ onClick }>
-      Mark for deletion
-    </a>
+  (<span>
+    <button onClick={ onClick }>x</button>
     &nbsp;
-  </span>;
+  </span>);
 
-const FileItemRow = (props) =>
-  <tr>
+const FileItemRow = props =>
+  (<tr>
     <td> <FileItemName name={props.name} isDirectory = {props.isDirectory} onClick={props.onClick} /> </td>
     <td> {props.size} </td>
-    <td> <DeleteButton onClick= {props.onMarkForDeletion} /> </td>
-  </tr>;
+    <td> 
+      { props.markedForDeletion ||
+        <DeleteButton onClick= {props.onMarkForDeletion} /> }
+    </td>
+    { props.markedForDeletion &&
+    <td> ~~~~ </td>}
+  </tr>);
 
 
 export default FileItemRow;
