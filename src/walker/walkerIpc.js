@@ -11,7 +11,8 @@ function deleteFile(theTarget) {
 }
 
 function deepScanDone(treeTop) {
-  ipcRenderer.send('deep-scan-done', {});
+  ipcRenderer.send('deep-scan-done', 
+    { size: treeTop.fileSize, path: treeTop.path, isDirectory: treeTop.isDirectory });
 }
 
 function scanTopDone(data) {
@@ -34,7 +35,9 @@ function startDeepScanEventHandler(args) {
 
 function scanTopEventHandler() {
   ipcRenderer.on('scan-top', (event, theTarget) => {
-    return scanTop(theTarget);
+    console.log('starting scan-top', theTarget);
+    const data = scanTop(theTarget);
+    scanTopDone(data);
   })
 }
 

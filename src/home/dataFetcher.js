@@ -67,6 +67,7 @@ const figureOut = (path) => {
 };
 
 const fetchTheData = (path) => {
+  throw(new Error('fetchTheData'));
   return new Promise((resolve, x) => {
     resolve(figureOut(path));
   });

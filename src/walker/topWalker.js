@@ -14,10 +14,12 @@ function walkTop (dir, sizeStore) {
   let list = sizeStore.getTop(dir);
   // console.log(list)
   return list.map( (child) => {
-    return {
-      filePath: child.fileName,
+    return {  // TODO: This is redundant. walkHelper.nonormalizeIt does it
+      name: child.fileName,
+      path: child.path,
       size: child.fileSize,
-      isDirectory: (child.children.length > 0) // FIXME: get this from sizeStore, correct it -
+      isDirectory: child.isDirectory,
+      // isDirectory: (child.children.length > 0) // FIXME: get this from sizeStore, correct it -
     }                                          // empty directories look like files here
   })
 }

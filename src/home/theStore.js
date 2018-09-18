@@ -8,6 +8,7 @@ const parentsOf = (path) => {
   return _.times(arr.length-1, (i) => _.dropRight(arr, i).join('/'));
 }
 
+// Its deleteable if there is no deleted parent
 const isDeletable = (path, deletionList) => {
   const parentPaths = parentsOf(path);
   const deletionListPaths = deletionList.map(x => x.path);
@@ -22,6 +23,7 @@ class TheStore {
   @observable selectedTarget = null;
   @observable fileData = [];
   @observable deletionList = [];
+  @observable totalSize = null; // TODO: set it the first time data comes
 
   @computed get currentTarget(){
     return this.selectedTarget ? this.selectedTarget : this.baseTarget;
@@ -35,6 +37,14 @@ class TheStore {
     );
   }
 
+  @computed get spaceSaved() {
+    return _.reduce(this.deletionList.slice(), (sum, fileItem) =>  sum + parseInt(fileItem.size), 0)
+  }
+
+  @computed get fileDataPresent() {
+    return this.fileData.slice().length > 0;
+  }
+
   @computed get isOnTop() {
     return this.currentTarget === this.baseTarget;
   }
@@ -44,18 +54,41 @@ class TheStore {
   }
 
   @action
-  fetchFileData(path) {
-    this.selectedTarget = path;
-    fetchTheData(path)
-    .then(
-      action((data) => { this.fileData = data.resultList })
-    );
+  setFileData(data) { // { theTarget, resultList, totalSize  }
+    this.fileData = data.resultList; // check walkHelper.normalizeIt to see the structure
+    this.selectedTarget = data.theTarget;
+    // this.totalSize = data.totalSize;
   }
 
   @action
-  markForDeletion(path) {
+  setTotalSize(sizeInKib) {
+    this.totalSize = sizeInKib;
+  }
+
+  @action
+  setBaseTarget(path) {
+    this.baseTarget = path;
+  }
+
+  // @action
+  // fetchFileData(path) {
+  //   this.selectedTarget = path;
+  //   fetchTheData(path)
+  //   .then(
+  //     action((data) => { this.fileData = data.resultList })
+  //   );
+  // }
+
+  @action
+  markForDeletion1(path) { // TODO: push the full struct
     if (isDeletable(path, this.deletionList)) return;
     this.deletionList.push({ path: path });
+  }
+
+  @action
+  markForDeletion(fileData) {
+    if (isDeletable(fileData.path, this.deletionList)) return;
+    this.deletionList.push(fileData);
   }
 
   @action

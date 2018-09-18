@@ -10,9 +10,10 @@ const path = require('path');
 interface TheNode {
   fileName: string,
   fileSize: number,
+  path: string,
+  isDirectory: Boolean,
   parentNode: TheNode,
-  children: TheNode[]
-  // isDirectory: Boolean // TODO
+  children: TheNode[],
 }
 let removals:TheNode[] = [];
 let tree:TheNode = null;
@@ -25,13 +26,27 @@ interface LinkedListNode {
 
 // ------------------------------------------------------
 
-let make_child = (fileName: string, size: number, parent: TheNode): TheNode => {
+let make_root = (fileName: string): TheNode => {
+  return {
+    fileName: fileName,
+    fileSize: 0,
+    path: fileName,
+    isDirectory: true, // must be
+    parentNode: null,
+    children: []
+  };
+}
+
+let make_child = (fileName: string, size: number, isDirectory:Boolean, parent: TheNode): TheNode => {
   let newChild = {
     fileName: fileName,
     fileSize: size,
+    path: '',
+    isDirectory: isDirectory,
     parentNode: parent,
     children: []
    }
+   newChild.path = pathFor(newChild); // TODO: path could be saved at 'set' time
    parent.children.push(newChild);
    return newChild;
  }
@@ -84,9 +99,15 @@ let cascadeSizes = (node: TheNode, size: number): void => {
 
 let find_matching_child = (node: TheNode, name: string): TheNode => {
   let match: TheNode = null;
-  node.children.forEach((theChild) => {
-    if (theChild.fileName === name) match = theChild;
-  })
+  // node.children.forEach((theChild) => {
+  //   if (theChild.fileName === name) match = theChild;
+  // })
+  let arr = node.children;
+  for (let i = 0; i < arr.length; i++) {
+    const theChild = arr[i];
+    if (theChild.fileName === name) return theChild;
+    // console.log('just some io');
+  }
   return match;
 }
 
@@ -109,6 +130,16 @@ let sizeOnDisk = (sizeInBytes: number): number => {
   let kibPerBlock:number = blockSize / 1024;
   let sizeInKb:number = totalBlocks * kibPerBlock
   return sizeInKb;
+}
+
+let pathFor = (node: TheNode):string => {
+  let n1:TheNode = node;
+  let path:string[] = [];
+  while (n1 !== null) {
+    path.push(n1.fileName);
+    n1 = n1.parentNode;
+  }
+  return path.reverse().join('/');
 }
 
 // ------------------------------------------------------
@@ -144,14 +175,15 @@ let getTop = (filePath: string): TheNode[] => {
   return node.children;
 }
 
-let set = (filePath: string, size: number): TheNode => {
+let set = (filePath: string, size: number, isDirectory: Boolean): TheNode => {
 
   let ptr:TheNode = tree;
 
+  // TODO: This needs throttling. Async is not the solution
   loopOverParts(filePath, (part) => {
     let child:TheNode = find_matching_child(ptr, part.fileName);
     if (child === null ){
-      ptr = make_child(part.fileName, 0, ptr)
+      ptr = make_child(part.fileName, 0, isDirectory, ptr)
     }else{
       ptr = child
     }
@@ -177,7 +209,8 @@ let remove = (filePath: string):boolean => {
 
 let init = (dir: string): TheNode => {
   treeTop = dir;
-  tree = { fileName: dir, fileSize: 0, parentNode: null, children: [] }
+  // tree = { fileName: dir, path: dir, fileSize: 0, parentNode: null, children: [] }
+  tree = make_root(dir);
   return tree;
 }
 
@@ -200,5 +233,6 @@ module.exports = {
       dropTheTop: dropTheTop,
       find_matching_child: find_matching_child,
       loopOverParts: loopOverParts,
+      pathFor: pathFor,
     }
   }

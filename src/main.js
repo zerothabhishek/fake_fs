@@ -65,9 +65,9 @@ ipcMain.on('start-deep-scan', (event, args) => {
 })
 
 ipcMain.on('deep-scan-done', (event, details) => {
-  // walkingWindow.hide();
+  walkingWindow.hide();
   mainWindow.setSize(800, 600, true);
-  // console.log('--------------------->', details);
+  // console.log(details);
   mainWindow.webContents.send('deep-scan-done', details);
 })
 
@@ -77,12 +77,11 @@ ipcMain.on('walk-cancelled', (event, details) => {
 })
 
 ipcMain.on('scan-top', (event, theTarget) => {
-  console.log('scan-top', theTarget);
   walkingWindow.webContents.send('scan-top', theTarget);
 });
 
-ipcMain.on('scan-top-done', (event, args) => {
-  mainWindow.webContents.send('scan-top-done', args);
+ipcMain.on('scan-top-done', (event, data) => {
+  mainWindow.webContents.send('scan-top-done', data);
 })
 
 ipcMain.on('delete-file', (event, details) => {

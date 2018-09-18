@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import HomeRenderer from './HomeRenderer';
+import HomeRenderer from './home/HomeRenderer';
 import WalkingRenderer from './walker/WalkingRenderer';
 
 const inWalker = window.location.pathname === '/walker';

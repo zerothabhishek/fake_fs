@@ -20,17 +20,21 @@ function init1 (ss) {
 // }
 
 function processFile(filePath, stats, doneCallback){
-  sizeStore.set(filePath, stats.size);
-  doneCallback();
+  // setTimeout(() => {
+    sizeStore.set(filePath, stats.size, false);
+    doneCallback();  
+  // }, 200);
 }
 
 function processDir(dir, stats, doneCallback){
-  sizeStore.set(dir, stats.size);
-  realWalk(dir, (err) => {
-    if (err) console.log('Error: ', err);
-    // console.log('Done:', dir) // adds to CPU load
-    doneCallback()
-  });
+  // setTimeout(() => {
+    sizeStore.set(dir, stats.size, true);
+    realWalk(dir, (err) => {
+      if (err) console.log('Error: ', err);
+      console.log('Done:', dir) // adds to CPU load
+      doneCallback()
+    });      
+  // }, 200);
 }
 
 function processItemSlow (itemPath, doneCallback) {
@@ -58,6 +62,7 @@ function processItem (itemPath, doneCallback) {
 
 function realWalk (dir, finalCallback) {
 
+  // TODO: if dir given is a file, handle it separately
   //if (abort_now) { abort_now = false; return }
 
   let pathOf = (x) => path.join(dir, x)  // Helper function

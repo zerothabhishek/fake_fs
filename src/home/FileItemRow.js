@@ -1,4 +1,5 @@
 import React from 'react';
+import walkHelper from '../walker/walkHelper';
 
 const FileItemName = ({ name, isDirectory, onClick }) => 
   isDirectory ?
@@ -14,8 +15,14 @@ const DeleteButton = ({ onClick }) =>
 
 const FileItemRow = props =>
   (<tr>
-    <td> <FileItemName name={props.name} isDirectory = {props.isDirectory} onClick={props.onClick} /> </td>
-    <td> {props.size} </td>
+    <td style={{textAlign: 'left'}} >
+      <FileItemName
+        name={props.name}
+        isDirectory = {props.isDirectory}
+        onClick={props.onClick}
+      />
+    </td>
+    <td> {walkHelper.humanized(props.size)} </td>
     <td> 
       { props.markedForDeletion ||
         <DeleteButton onClick= {props.onMarkForDeletion} /> }

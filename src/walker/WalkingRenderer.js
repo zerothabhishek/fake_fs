@@ -1,5 +1,5 @@
 import React from 'react';
-import sizeStore from '../sizeStore';
+import sizeStore from './sizeStore';
 import WalkerIpc from './walkerIpc';
 import scanTop from './scanTop';
 
@@ -29,7 +29,8 @@ class WalkingRenderer extends React.Component {
     window.madFs.walker.sizeStore = sizeStore
     window.madFs.walker.ipc = WalkerIpc;
 
-    const onProgress = (err, filePath) => this.setState({ currentFile: filePath });
+    // const onProgress = (err, filePath) => this.setState({ currentFile: filePath });
+    const onProgress = (err, filePath) => {  };
     const onDone = (err, treeTop) => {
       this.setState({ currentFile: '', done: true });
       afterDeepScan(treeTop);

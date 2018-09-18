@@ -17,28 +17,31 @@ class Explorer extends React.Component {
   }
 
   componentDidMount() {
-    this.props.store.fetchFileData(this.props.store.currentTarget);
+    // this.props.store.fetchFileData(this.props.store.currentTarget);
   }
 
   goUp(e) {
     e.preventDefault();
     window.foo && window.foo();
     const path = parentOf(this.props.store.currentTarget);
-    this.props.store.fetchFileData(path);
+    // this.props.store.fetchFileData(path);
+    window.madFs.home.ipc.startScanTop(path);
   }
 
   onClick(fileItem) {
     return (e) => {
       // dispatch action that changes store.currentTarget
       e.preventDefault();
-      this.props.store.fetchFileData(fileItem.path);
+      // this.props.store.fetchFileData(fileItem.path);
+      window.madFs.home.ipc.startScanTop(fileItem.path);
     }
   }
 
   onMarkForDeletion(fileItem) {
     return (e) => {
       e.preventDefault();
-      this.props.store.markForDeletion(fileItem.path);
+      // this.props.store.markForDeletion(fileItem.path);
+      this.props.store.markForDeletion(fileItem);
     }
   }
 

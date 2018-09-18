@@ -14,9 +14,9 @@ function humanized (sizeKb) {
   let oneKb = 1;
   let oneMb = 1024 * oneKb;
   let oneGb = 1024 * oneMb;
-  if (sizeKb <  oneMb) { return sizeKb + ' Kib' }
-  if (sizeKb <  oneGb) { return (sizeKb/oneMb).toFixed(2) + ' Mib' }
-  if (sizeKb >= oneGb) { return (sizeKb/oneGb).toFixed(2) + ' Gib' }
+  if (sizeKb <  oneMb) { return sizeKb.toFixed(0) + ' Kib' }
+  if (sizeKb <  oneGb) { return (sizeKb/oneMb).toFixed(0) + ' Mib' }
+  if (sizeKb >= oneGb) { return (sizeKb/oneGb).toFixed(0) + ' Gib' }
 }
 
 function humanizeIt (theList) {
@@ -40,7 +40,8 @@ function normalizeIt (theList) {
   let normalizedList = [];
   theList.forEach (function(props){
     let h1 = {}
-    h1['name']        =  path.basename(props['filePath']);
+    h1['name']        =  props['name'];
+    h1['path']        =  props['path'];
     h1['size']        =  props['size'];
     h1['isDirectory'] =  props['isDirectory'];
     h1['isFile']      = !props['isDirectory'];

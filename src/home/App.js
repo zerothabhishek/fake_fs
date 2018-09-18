@@ -4,6 +4,7 @@ import { observer } from 'mobx-react';
 import Explorer from './explorer';
 import Startup from './startup';
 import DeletionList from './deletionList';
+import walkHelper from '../walker/walkHelper';
 // import Footer from './Footer';
 
 import './App.css';
@@ -29,11 +30,20 @@ class App extends Component { // eslint-disable-line react/prefer-stateless-func
   }
 
   render() {
-    if (this.props.showStartup) {
+    const showStartup = !this.props.store.fileDataPresent;
+
+    if (showStartup) {
       return <Startup selectFolder={this.selectFolder}/>;
     }
     return (
       <div className="App">
+        <Startup selectFolder={this.selectFolder}/>
+
+        <div>
+          Total space: {walkHelper.humanized(this.props.store.totalSize)}
+          Space saved: {walkHelper.humanized(this.props.store.spaceSaved)}
+        </div> 
+
         <Tabs>
           <TabList>
             <Tab>The Explorer!!</Tab>
